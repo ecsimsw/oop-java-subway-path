@@ -1,10 +1,6 @@
 package subway.controller;
 
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.WeightedMultigraph;
 import subway.domain.*;
-import subway.domain.exception.UnreachableStationException;
-import subway.domain.validator.SearchValidator;
 import subway.view.InputView;
 import subway.view.OutputView;
 
@@ -12,16 +8,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class SearchController {
-    private final Scanner scanner;
-    private final DijkstraShortestPath dijkstraPathByDistance;
-    private final DijkstraShortestPath dijkstraPathByTime;
-
     private static SearchController searchController = null;
+    private final Scanner scanner;
 
     private SearchController(Scanner scanner) {
         this.scanner = scanner;
-        dijkstraPathByDistance = new DijkstraShortestPath(SearchGraph.getGraphByDistance());
-        dijkstraPathByTime = new DijkstraShortestPath(SearchGraph.getGraphByTime());
     }
 
     public static SearchController getSearchController(Scanner scanner) {
@@ -32,47 +23,19 @@ public class SearchController {
     }
 
     public void searchByDistance() {
-        List<Station> shortest = getShortestByDistance(getDeparture(), getArrival());
+        List<Station> shortest = ShortestPath.getShortestPathByDistance(getDeparture(), getArrival());
         printResult(shortest);
-    }
-
-    public List<Station> getShortestByDistance(Station from, Station to) {
-        try {
-            SearchValidator.checkTwoStationsAreDifferent(from, to);
-            return dijkstraPathByDistance.getPath(from, to).getVertexList();
-        } catch (Exception e) {
-            throw new UnreachableStationException();
-        }
     }
 
     public void searchByTime() {
-        List<Station> shortest = getShortestByTime(getDeparture(), getArrival());
+        List<Station> shortest = ShortestPath.getShortestPathByTime(getDeparture(), getArrival());
         printResult(shortest);
     }
 
-    public List<Station> getShortestByTime(Station from, Station to) {
-        try {
-            SearchValidator.checkTwoStationsAreDifferent(from, to);
-            return dijkstraPathByTime.getPath(from, to).getVertexList();
-        } catch (Exception e) {
-            throw new UnreachableStationException();
-        }
-    }
-
     private void printResult(List<Station> path) {
-        int takenDistance = getSumOfWeights(path, dijkstraPathByDistance);
-        int takenTime = getSumOfWeights(path, dijkstraPathByTime);
+        int takenDistance = ShortestPath.getDistanceWeight(path);
+        int takenTime = ShortestPath.getTakenTimeWeight(path);
         OutputView.printSearchResult(path, takenDistance, takenTime);
-    }
-
-    private int getSumOfWeights(List<Station> path, final DijkstraShortestPath dijkstraShortestPath) {
-        int sum = 0;
-        for (int index = 0; index < path.size() - 1; index++) {
-            Station from = path.get(index);
-            Station to = path.get(index + 1);
-            sum += dijkstraShortestPath.getPath(from, to).getWeight();
-        }
-        return sum;
     }
 
     private Station getDeparture() {
