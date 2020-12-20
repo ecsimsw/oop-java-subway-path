@@ -4,6 +4,7 @@ import subway.domain.*;
 import subway.view.InputView;
 import subway.view.OutputView;
 
+import java.awt.desktop.OpenURIEvent;
 import java.util.List;
 import java.util.Scanner;
 
@@ -23,42 +24,38 @@ public class SearchController {
     }
 
     public void searchByDistance() {
-        List<Station> shortest = ShortestPath.getShortestPathByDistance(getDeparture(), getArrival());
-        printResult(shortest);
+        try {
+            List shortest = ShortestPath.getShortestPathByDistance(getDeparture(), getArrival());
+            printResult(shortest);
+        } catch (Exception e) {
+            OutputView.printError(e);
+            searchByDistance();
+        }
     }
 
     public void searchByTime() {
-        List<Station> shortest = ShortestPath.getShortestPathByTime(getDeparture(), getArrival());
-        printResult(shortest);
+        try {
+            List shortest = ShortestPath.getShortestPathByTime(getDeparture(), getArrival());
+            printResult(shortest);
+        } catch (Exception e) {
+            OutputView.printError(e);
+            searchByTime();
+        }
     }
 
     private void printResult(List<Station> path) {
-        int takenDistance = ShortestPath.getDistanceWeight(path);
+        int distance = ShortestPath.getDistanceWeight(path);
         int takenTime = ShortestPath.getTakenTimeWeight(path);
-        OutputView.printSearchResult(path, takenDistance, takenTime);
+        OutputView.printSearchResult(path, distance, takenTime);
     }
 
     private Station getDeparture() {
-        try {
-            String name = InputView.getDepartureStation(scanner);
-            return getStationByName(name);
-        } catch (Exception e) {
-            OutputView.printError(e);
-            return getDeparture();
-        }
+        String name = InputView.getDepartureStation(scanner);
+        return StationRepository.getStation(name);
     }
 
     private Station getArrival() {
-        try {
-            String name = InputView.getArrivalStation(scanner);
-            return getStationByName(name);
-        } catch (Exception e) {
-            OutputView.printError(e);
-            return getArrival();
-        }
-    }
-
-    private Station getStationByName(String name) {
+        String name = InputView.getArrivalStation(scanner);
         return StationRepository.getStation(name);
     }
 }
