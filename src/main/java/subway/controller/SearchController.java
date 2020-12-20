@@ -16,10 +16,19 @@ public class SearchController {
     private final DijkstraShortestPath dijkstraPathByDistance;
     private final DijkstraShortestPath dijkstraPathByTime;
 
-    public SearchController(Scanner scanner) {
+    private static SearchController searchController = null;
+
+    private SearchController(Scanner scanner) {
         this.scanner = scanner;
         dijkstraPathByDistance = new DijkstraShortestPath(SearchGraph.getGraphByDistance());
         dijkstraPathByTime = new DijkstraShortestPath(SearchGraph.getGraphByTime());
+    }
+
+    public static SearchController getSearchController(Scanner scanner) {
+        if (searchController == null) {
+            searchController = new SearchController(scanner);
+        }
+        return searchController;
     }
 
     public void searchByDistance() {

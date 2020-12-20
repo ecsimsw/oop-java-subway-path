@@ -13,7 +13,7 @@ public class SubwayPathApp {
 
     public void run() {
         DummyData.initialize();
-        final MainMenu mainMenu = new MainMenu(scanner);
+        final MainMenu mainMenu = MainMenu.getInstance(scanner);
         mainMenu.run();
     }
 }

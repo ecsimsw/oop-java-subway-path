@@ -22,9 +22,18 @@ public class SearchPathMenu {
     private final Scanner scanner;
     private final SearchController searchController;
 
-    public SearchPathMenu(Scanner scanner) {
+    private static SearchPathMenu searchPathMenu = null;
+
+    private SearchPathMenu(Scanner scanner) {
         this.scanner = scanner;
-        searchController = new SearchController(scanner);
+        searchController = SearchController.getSearchController(scanner);
+    }
+
+    public static SearchPathMenu getInstance(Scanner scanner) {
+        if (searchPathMenu == null) {
+            searchPathMenu = new SearchPathMenu(scanner);
+        }
+        return searchPathMenu;
     }
 
     public void run() {

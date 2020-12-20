@@ -17,15 +17,23 @@ import java.util.stream.Collectors;
                 컨트롤러로 두는 의미가 있을지 고민했다.
 */
 
-
 public class MainMenu {
     private final Scanner scanner;
     private final SearchPathMenu searchPathMenu;
     private boolean isAppEnd = false;
 
-    public MainMenu(Scanner scanner) {
+    private static MainMenu mainMenu = null;
+
+    private MainMenu(Scanner scanner) {
         this.scanner = scanner;
-        searchPathMenu = new SearchPathMenu(scanner);
+        searchPathMenu = SearchPathMenu.getInstance(scanner);
+    }
+
+    public static MainMenu getInstance(Scanner scanner) {
+        if (mainMenu == null) {
+            mainMenu = new MainMenu(scanner);
+        }
+        return mainMenu;
     }
 
     public void run() {
